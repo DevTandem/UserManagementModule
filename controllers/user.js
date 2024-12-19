@@ -13,7 +13,7 @@ const {generate_token}  = require("../utils/generateToken")
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer")
 const otp_generator = require("otp-generator");
-const { use } = require("../routes/user");
+const schedule = require("node-schedule")
 
 const transporter = nodemailer.createTransport({
     service : 'gmail',
