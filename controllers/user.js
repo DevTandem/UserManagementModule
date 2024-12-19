@@ -67,7 +67,7 @@ const signUp = async (req , res) => {
         })
 
         const pass = otp_generator.generate(6, { upperCaseAlphabets: false, lowerCaseAlphabets: false, specialChars: false });
-        const expiresAt = new Date(Date.now() + 1 * 60 * 1000);
+        const expiresAt = new Date(Date.now() + 1 * 60 * 1000).toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
 
         const save_otp = await otp.create({
             otp : pass,
@@ -180,7 +180,7 @@ const super_user_signUp = async (req , res) => {
       })
 
       const pass = otp_generator.generate(6, { upperCaseAlphabets: false, lowerCaseAlphabets: false, specialChars: false });
-      const expiresAt = new Date(Date.now() + 1 * 60 * 1000);
+      const expiresAt = new Date(Date.now() + 1 * 60 * 1000).toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
 
       const save_otp = await otp.create({
           otp : pass,
