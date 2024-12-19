@@ -13,6 +13,16 @@ const generate_token = (user) => {
     return jwt.sign(payload , secret , {expiresIn:'1h'})
 }
 
+const dev_generate_token = (user) => {
+    const payload = {
+        id : user.id,
+        name : user.name,
+        email : user.email,
+        developer : true
+    }
+    return jwt.sign(payload , secret , {expiresIn:'1h'})
+}
+
 const reset_token = (user) => {
     const payload = {
         email : user.email
@@ -22,5 +32,6 @@ const reset_token = (user) => {
 }
 module.exports = {
     generate_token,
-    reset_token
+    reset_token,
+    dev_generate_token
 }
