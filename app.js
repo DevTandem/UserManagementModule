@@ -3,9 +3,12 @@ const { client } = require("./config/db");
 
 const app = express();
 
+const user_router = require("./routes/user")
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+app.use("/main" , user_router)
 
 const PORT = 5000;
 
