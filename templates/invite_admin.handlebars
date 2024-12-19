@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invitation to Join Our Organization</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            background-color: #007BFF;
+            color: #ffffff;
+            padding: 10px;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .content {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .content h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .content p {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background-color: #007BFF;
+            color: #ffffff;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 14px;
+            color: #777;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Welcome to {{organization_name}}</h2>
+        </div>
+        <div class="content">
+            <h1>Hello,</h1>
+            <p>We are pleased to invite you to join our organization as an admin. Your skills and experience are highly valued, and we believe you would be a great addition to our team.</p>
+            <p>Please click the button below to accept the invitation and set up your admin account:</p>
+            <a href="{{admin_signup_link}}" class="cta-button">Join as Admin</a>
+        </div>
+        <div class="footer">
+            <p>If you have any questions or need further assistance, feel free to reply to this email.</p>
+            <p>Looking forward to working with you!</p>
+        </div>
+    </div>
+</body>
+
+</html>
