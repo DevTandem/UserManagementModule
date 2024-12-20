@@ -9,6 +9,11 @@ const map_res2ug_model = require("../db/models/resource_ug_map");
 const map_res2ug = map_res2ug_model(sequelize, DataTypes)
 const u2pmap = require("../db/models/u2pmap");
 const u_map = u2pmap(sequelize, DataTypes)
+const UserModel = require("../db/models/user");
+const user = UserModel(sequelize, DataTypes)
+const user2ugModel = require("../db/models/user_ug_map");
+const user2ug = user2ugModel(sequelize,DataTypes)
+
 
 const create_resource = async (req , res ) => {
     const { r_name , qty } = req.body
@@ -16,6 +21,17 @@ const create_resource = async (req , res ) => {
     if(!obj) return res.json({message: "No auth found"})
 
     try {
+        const check_permission = await u_map.findAll({
+            where : {
+                user_id : obj.id
+            }
+        })
+        const hasPermission = check_permission.some(permission => permission.p_name === "MANAGE_RESOURCES");
+
+        if(!hasPermission){
+            return res.status(403).json({message : "You do not have permission to add users to user groups"})
+        }
+
         if(!r_name || !qty){
             return res.status(400).json({message : "Please provide all the details"})
         }
@@ -26,7 +42,7 @@ const create_resource = async (req , res ) => {
             user_id : obj.id,
         })
 
-        req.rid = resource.id
+        req.rid = create_res.id
         next()
         
     } catch (error) {
@@ -36,7 +52,7 @@ const create_resource = async (req , res ) => {
 }
 
 const get_all_resources = async (req , res) => {
-    const {warehouse_id , user_group_id} = req.params
+    // const {warehouse_id , user_group_id} = req.params
     const obj = req.user 
 
     try {
@@ -47,12 +63,18 @@ const get_all_resources = async (req , res) => {
             }
         }) 
 
+        const User = await user.findOne({
+            where: {
+                id: obj.id
+            }
+        })
+
         const hasPermission = check_permission.some(permission => permission.name === "MANAGE_RESOURCES");
 
         if(hasPermission){
             const resources = await map_res2ug.findAll({
                 where : {
-                    warehouse_id : warehouse_id
+                    warehouse_id : User.warehouse_id
                 }
             })
 
@@ -63,10 +85,19 @@ const get_all_resources = async (req , res) => {
             return res.status(200).json({resources})
 
         }else{
+            const u2ug_check = await user2ug.findOne({
+                where:User.id,
+                warehouse_id: User.warehouse_id
+            })
+            if(!u2ug_check){
+                return res.status(400).json({message: "User is not assigned to any user group in the organization"})
+            }
+
             const resources = await map_res2ug.findAll({
                 where : {
-                    warehouse_id : warehouse_id,
-                    user_group_id : user_group_id
+                    warehouse_id : User.id,
+                    user_group_id : u2ug_check.ug_id,
+                    read_op: true
                 }
             })
 

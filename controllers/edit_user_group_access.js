@@ -7,11 +7,13 @@ const u_map_p = require("../db/models/u2pmap");
 const u_map = u_map_p(sequelize , DataTypes)
 const resource_ug_map_model = require("../db/models/resource_ug_map")
 const resource_ug_map = resource_ug_map_model(sequelize, DataTypes)
+const UserModel = require("../db/models/user");
+const user = UserModel(sequelize, DataTypes)
 
 const edit_user_group_access = async (req , res) => {
     const manage_access = req.body
     const obj = req.user
-    const {warehouse_id, resource_id} = req.params
+    const {resource_id} = req.params
 
     if(!obj) return res.json({message: "No auth found"})
     
@@ -28,6 +30,12 @@ const edit_user_group_access = async (req , res) => {
             return res.status(403).json({message : "You do not have permission to manage user group access"})
         }
 
+        const User = await user.findOne({
+            where: {
+                id: obj.id
+            }
+        })
+
         for (var key in manage_access){
             ma = manage_access[key]
             if(ma["policy"]==1){
@@ -35,7 +43,7 @@ const edit_user_group_access = async (req , res) => {
                     where : {
                         ug_id: ma["ug_id"],
                         resource_id: parseInt(resource_id),
-                        warehouse_id : warehouse_id
+                        warehouse_id : User.warehouse_id
                     }
                 })
 
@@ -47,7 +55,7 @@ const edit_user_group_access = async (req , res) => {
                         ug_id: ma["ug_id"],
                         resource_id: parseInt(resource_id),
                         id : parseInt(p_id.id),
-                        warehouse_id : warehouse_id
+                        warehouse_id : User.warehouse_id
                     },
                 })
                 if(!res_map) return res.status(404).json({message: "Error in updating data of resource_ug_map table"})
@@ -57,7 +65,7 @@ const edit_user_group_access = async (req , res) => {
                     where : {
                         ug_id: ma["ug_id"],
                         resource_id: parseInt(resource_id),
-                        organizationId : obj.organizationId
+                        warehouse_id : User.warehouse_id
                     }
                 })
                 const res_map = await resource_ug_map.update(
@@ -67,7 +75,7 @@ const edit_user_group_access = async (req , res) => {
                         ug_id: ma["ug_id"],
                         resource_id: parseInt(resource_id),
                         id : parseInt(p_id.id),
-                        organizationId : obj.organizationId
+                        warehouse_id : User.warehouse_id
                     },
                 })
                 if(!res_map) return res.status(404).json({message: "Error in updating data of resource_ug_map table"})
@@ -77,7 +85,7 @@ const edit_user_group_access = async (req , res) => {
                     where : {
                         ug_id: ma["ug_id"],
                         resource_id: parseInt(resource_id),
-                        organizationId : obj.organizationId
+                        warehouse_id : User.warehouse_id
                     }
                 })
                 const res_map = await resource_ug_map.update(
@@ -87,7 +95,7 @@ const edit_user_group_access = async (req , res) => {
                         ug_id: ma["ug_id"],
                         resource_id: parseInt(resource_id),
                         id : parseInt(p_id.id),
-                        organizationId : obj.organizationId
+                        warehouse_id : User.warehouse_id
                     },
                 })
                 if(!res_map) return res.status(404).json({message: "Error in updating data of resource_ug_map table"})
