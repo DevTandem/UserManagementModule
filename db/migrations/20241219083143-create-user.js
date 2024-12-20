@@ -29,6 +29,14 @@ module.exports = {
         type: Sequelize.STRING,
         unique: true
       },
+      warehouse_id: {
+        type: Sequelize.INTEGER,
+        references : {
+          model: 'warehouses',
+          key: 'id'
+        },
+        allowNull : true
+      },
       status: {
         type: Sequelize.BOOLEAN
       },
