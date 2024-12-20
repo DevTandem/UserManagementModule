@@ -14,7 +14,7 @@ const {generate_token}  = require("../utils/generateToken")
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer")
 const otp_generator = require("otp-generator");
-const schedule = require("node-schedule")
+const schedule = require("node-schedule");
 
 const transporter = nodemailer.createTransport({
     service : 'gmail',
@@ -63,6 +63,7 @@ const signUp = async (req , res) => {
             email : email,
             password : hashed_password,
             mobile_number : mobile_number,
+            warehouse_id: check_invite.warehouse_id,
             status : true
         })
 
@@ -165,6 +166,7 @@ const super_user_signUp = async (req , res) => {
         }
       })
       if(!check_user){
+        return res.status(400).json({message : "This email id can't be used for super user registeration "})
       }
 
 

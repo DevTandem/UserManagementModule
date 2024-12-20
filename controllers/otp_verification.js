@@ -54,10 +54,26 @@ const verify_otp = async (req , res) => {
               email: email
             },
           }
-      )
+        )
 
-      return res.status(200).json({ message: "OTP verified successfully." });
+        const User = await user.findOne({
+          email:email
+        })
 
+        if(User.warehouse_id){
+          const permissionList = ["ACCESS_WAREHOUSE"];        //later permissionsList has to be changed if there is any change in users persmission
+
+          for (const permission of permissionList) {
+              await u_map.create({
+                  user_id: User.id,
+                  p_name: permission,
+                  warehouse_id: User.warehouse_id
+              });
+          }
+        }
+
+        return res.status(200).json({ message: "OTP verified successfully." });
+        
     } catch (error) {
         console.log(error)
     }
@@ -111,7 +127,7 @@ const super_user_verify_otp = async (req , res) => {
         email:email
       })
 
-      const permissionList = ["ONBOARD_ORGANIZATION", "CREATE_WAREHOUSE", "CREATE_USER"];
+      const permissionList = ["ONBOARD_ORGANIZATION", "CREATE_WAREHOUSE", "CREATE_USER","ASSIGN_ADMIN"];
 
       for (const permission of permissionList) {
         await user_permission_map.create({
@@ -123,6 +139,8 @@ const super_user_verify_otp = async (req , res) => {
 
   } catch (error) {
       console.log(error)
+      return res.status(500).json({ message: "Internal server error" });
+
   }
 }
 
