@@ -8,8 +8,6 @@ const UserGroupModel = require("../db/models/user_group")
 const userGroup = UserGroupModel(sequelize, DataTypes)
 const resource_ug_map_model = require("../db/models/resource_ug_map")
 const resource_ug_map = resource_ug_map_model(sequelize, DataTypes)
-const u2pmap = require("../db/models/u2pmap");
-const u_map = u2pmap(sequelize, DataTypes)
 
 const resource_map = async (req,res) => {
     const r_id = req.rid
