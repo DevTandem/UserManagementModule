@@ -46,31 +46,7 @@ const create_organization = async (req , res ) => {
     }
 }
 
-const getAllOrganizations = async(req,res) => {
-    const obj = JSON.parse(req.user)
-
-    if(!obj) return res.json({message: "No auth found"})        
-
-    try {
-        
-        const organizations = await org.findAll()
-
-        if(!organizations.length()){
-            return res.status(404).json({message:"No organizations found"})
-        }
-
-        console.log(`Organizations :\n ${organizations}`)
-
-        return res.status(200).json({organizations})
-
-    } catch (error) {
-        console.log(error)
-        return res.status(500).json({ message: "Internal server error" });
-    }
-}
-
 
 module.exports = {
-    create_organization,
-    getAllOrganizations
+    create_organization
 }

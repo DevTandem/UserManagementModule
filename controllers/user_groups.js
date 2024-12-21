@@ -6,7 +6,7 @@ const sequelize = new Sequelize(dbUrl);
 const UserGroupModel = require("../db/models/user_group")
 const user_grp = UserGroupModel(sequelize , DataTypes)
 
-const u_map_p = require("../db/models/u2pmap");
+const u_map_p = require("../db/models/user_permission_map");
 const u_map = u_map_p(sequelize , DataTypes)
 
 const create_user_grp = async (req , res ) => {
@@ -67,6 +67,18 @@ const getAllUserGroups = async (req,res) =>{
     
 
     try {
+        const check_permission = await u_map.findAll({
+            where : {
+                user_id : obj.id
+            }
+        })
+
+        const hasPermission = check_permission.some(permission => permission.name === "CREATE_USER_GROUP");
+
+        if(!hasPermission){
+            return res.status(403).json({message : "You do not have permission to create user group"})
+        }
+        
         const user_groups = await user_grp.findAll()
 
         if(!user_groups.length()){

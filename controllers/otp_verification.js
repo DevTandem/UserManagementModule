@@ -2,9 +2,9 @@ require("dotenv").config()
 const { Sequelize, DataTypes, Op } = require('sequelize');
 const dbUrl = process.env.DATABASE_URL
 const sequelize = new Sequelize(dbUrl);
-const InviteModel = require("../db/models/u2u_invites")
+const InviteModel = require("../db/models/u2u_invite")
 const invite = InviteModel(sequelize , DataTypes)
-const d2uInviteModel = require("../db/models/d2u_invites")
+const d2uInviteModel = require("../db/models/d2u_invite")
 const d2uInvite = d2uInviteModel(sequelize , DataTypes)
 const user_permission_map_model = require("../db/models/user_permission_map")
 const user_permission_map = user_permission_map_model(sequelize, DataTypes)

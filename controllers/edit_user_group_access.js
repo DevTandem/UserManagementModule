@@ -3,7 +3,7 @@ const { Sequelize, DataTypes } = require('sequelize');
 const dbUrl = process.env.DATABASE_URL
 const sequelize = new Sequelize(dbUrl);
 
-const u_map_p = require("../db/models/u2pmap");
+const u_map_p = require("../db/models/user_permission_map");
 const u_map = u_map_p(sequelize , DataTypes)
 const resource_ug_map_model = require("../db/models/resource_ug_map")
 const resource_ug_map = resource_ug_map_model(sequelize, DataTypes)

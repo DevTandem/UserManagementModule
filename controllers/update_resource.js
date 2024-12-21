@@ -5,7 +5,7 @@ const sequelize = new Sequelize(dbUrl);
 
 const UserModel = require("../db/models/user");
 const user = UserModel(sequelize, DataTypes)
-const resourceModel = require("../db/models/resources")
+const resourceModel = require("../db/models/resource")
 const resource = resourceModel(sequelize, DataTypes)
 const resource_ug_map_model = require("../db/models/resource_ug_map")
 const resource_ug_map = resource_ug_map_model(sequelize, DataTypes)

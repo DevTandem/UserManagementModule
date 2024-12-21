@@ -4,9 +4,9 @@ const dbUrl = process.env.DATABASE_URL
 const sequelize = new Sequelize(dbUrl);
 const UserModel = require("../db/models/user");
 const user = UserModel(sequelize, DataTypes)
-const InviteModel = require("../db/models/u2u_invites")
+const InviteModel = require("../db/models/u2u_invite")
 const invite = InviteModel(sequelize , DataTypes)
-const d2uInviteModel = require("../db/models/d2u_invites")
+const d2uInviteModel = require("../db/models/d2u_invite")
 const d2uInvite = d2uInviteModel(sequelize , DataTypes)
 const OtpModel = require("../db/models/otp")
 const otp = OtpModel(sequelize , DataTypes)
@@ -15,6 +15,8 @@ const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer")
 const otp_generator = require("otp-generator");
 const schedule = require("node-schedule");
+const path = require("path");
+const hbs = require("nodemailer-express-handlebars");
 
 const transporter = nodemailer.createTransport({
     service : 'gmail',

@@ -3,11 +3,11 @@ const { Sequelize, DataTypes } = require('sequelize');
 const dbUrl = process.env.DATABASE_URL
 const sequelize = new Sequelize(dbUrl);
 
-const ResourceModel = require("../db/models/resources")
+const ResourceModel = require("../db/models/resource")
 const resource = ResourceModel(sequelize , DataTypes)
 const map_res2ug_model = require("../db/models/resource_ug_map");
 const map_res2ug = map_res2ug_model(sequelize, DataTypes)
-const u2pmap = require("../db/models/u2pmap");
+const u2pmap = require("../db/models/user_permission_map");
 const u_map = u2pmap(sequelize, DataTypes)
 
 const create_resource = async (req , res ) => {
@@ -24,6 +24,7 @@ const create_resource = async (req , res ) => {
             r_name : r_name,
             qty : qty,
             user_id : obj.id,
+            warehouse_id : hasPermission.warehouse_id
         })
 
         req.rid = resource.id
