@@ -15,10 +15,11 @@ module.exports = (sequelize, DataTypes) => {
   }
   d2u_invite.init({
     email: DataTypes.STRING,
-    developer_id: DataTypes.INTEGER
+    dev_id: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'd2u_invite',
+    timestamps : false
   });
   return d2u_invite;
 };

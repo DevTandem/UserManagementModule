@@ -19,25 +19,31 @@ const assign_user_to_warehouse = async (req,res) => {
 
 
     try{
+        console.log("user_id",user_id)
         const check_permission = await u_map.findAll({
             where : {
                 user_id : obj.id
             }
         })
-        const hasPermission = check_permission.some(permission => permission.p_name === "MANAGE_USERS");
+        const hasPermission = check_permission.find(permission => permission.p_name === "MANAGE_USERS");
 
         if(!hasPermission){
             return res.status(403).json({message : "You do not have permission to manage users"})
         }
 
-        const user_admin = await user.findOne({id:obj.id})
+        const user_admin = await user.findOne({
+            where : {
+                id:obj.id
+            }
+        })
         
         const user_permission = await u_map.findAll({
             where : {
                 user_id : user_id
             }
         })
-        if(user_permission){
+        console.log("id",user_permission.user_id)
+        if(user_permission.length>0){
             return res.status(400).json({message: "User is already assigned to some warehouse"})
         }
 
@@ -54,7 +60,7 @@ const assign_user_to_warehouse = async (req,res) => {
 
         for (const permission of permissionList) {
             await u_map.create({
-                user_id: update_user.id,
+                user_id: user_id,
                 p_name: permission,
                 warehouse_id: user_admin.warehouse_id
             });
@@ -82,13 +88,21 @@ const remove_user_from_warehouse = async (req,res) =>{
                 user_id : obj.id
             }
         })
-        const hasPermission = check_permission.some(permission => permission.p_name === "MANAGE_USERS");
+        const hasPermission = check_permission.find(permission => permission.p_name === "MANAGE_USERS");
 
         if(!hasPermission){
             return res.status(403).json({message : "You do not have permission to manage users"})
         }
 
-        const user_admin = await user.findOne({id:obj.id})
+        const user_admin = await user.findOne({
+            where : {
+                id:obj.id
+            }
+        })
+
+        if(user_admin.id === user_id){
+            return res.status(400).json({message: "You can't remove yourself from the warehouse"})
+        }
 
         const user_permission = await u_map.findAll({
             where : {
@@ -113,14 +127,23 @@ const remove_user_from_warehouse = async (req,res) =>{
             }
         })
 
-        const remove_u2ug_map = await user2ug.destroy({
-            where:{
-                user_id:user_id,
-                ug_id: user_ug_map_check.ug_id,
+        const user_ug_map_check = await user2ug.findOne({
+            where : {
+                user_id : user_id,
                 warehouse_id: user_admin.warehouse_id
             }
         })
 
+        if(user_ug_map_check){
+            const remove_u2ug_map = await user2ug.destroy({
+                where:{
+                    user_id:user_id,
+                    ug_id: user_ug_map_check.ug_id,
+                    warehouse_id: user_admin.warehouse_id
+                }
+            })
+        }
+        
         const update_user = await user.update(
             {
                 warehouse_id:null
@@ -152,33 +175,80 @@ const getAllUsersInWarehouse = async (req,res) => {
                 user_id : obj.id
             }
         })
-        const hasPermission = check_permission.some(permission => permission.p_name === "MANAGE_USERS");
+        const hasPermission = check_permission.find(permission => permission.p_name === "MANAGE_USERS");
 
         if(!hasPermission){
             return res.status(403).json({message : "You do not have permission to manage users"})
         }
 
-        const user_admin = await user.findOne({id:obj.id})
+        const user_admin = await user.findOne({
+            where : {
+                id:obj.id
+            }
+        })
+
+        const excludedUserIds = await u_map.findAll({
+            attributes: ['user_id'],
+            where: {
+              p_name: "MANAGE_USERS",
+            },
+          }).then((rows) => rows.map((row) => row.user_id));
 
         const users = await user.findAll({
             where:{
-                warehouse_id: user_admin.warehouse_id
+                warehouse_id: user_admin.warehouse_id,
+                id: {
+                    [Op.notIn]: excludedUserIds,
+                  },
             }
         })
 
         if(!users.length)
             return res.status(400).json({message: "No users found in the "})
 
-
+        return res.status(200).json({message: "Successfully fetched the users", Users: users})
     } catch (error) {
         console.log(error)
         return res.status(500).json({ message: "Internal server error" });
     }
 }
 
+const getAllUsersNotInAnyWarehouse = async (req,res)=>{
+    const obj = req.user
+    if(!obj) return res.json({message: "No auth found"})
+
+    try {
+        const check_permission = await u_map.findAll({
+            where : {
+                user_id : obj.id
+            }
+        })
+        const hasPermission = check_permission.some(permission => permission.p_name === "MANAGE_USERS");
+
+        if(!hasPermission){
+            return res.status(403).json({message : "You do not have permission to manage users"})
+        }
+
+        const users = await user.findAll({
+            where:{
+                warehouse_id: null
+            }
+        })
+        
+        if(!users.length)
+            return res.status(400).json({message: "No users found"})
+
+        return res.status(200).json(users)
+        
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}
 
 module.exports = {
     assign_user_to_warehouse,
     remove_user_from_warehouse,
-    getAllUsersInWarehouse
+    getAllUsersInWarehouse,
+    getAllUsersNotInAnyWarehouse
 }

@@ -31,20 +31,36 @@ const add_user_to_ug = async(req,res) => {
             return res.status(403).json({message : "You do not have permission to add users to user groups"})
         }
 
-        const user_admin = await user.findOne({id:obj.id})
+        const user_admin = await user.findOne({
+            where : {
+                id:obj.id
+            }
+        })
 
-        const ug = await user_group.findOne({id:ug_id,warehouse_id: user_admin.warehouse_id})
+        const ug = await user_group.findOne({
+            where :{
+                id:ug_id,
+                warehouse_id: user_admin.warehouse_id
+            }
+        })
 
         if(!ug)
             return res.status(400).json({message:"User group doesn't exists in the warehouse"})
 
-        const User = await user.findOne({id:user_id, warehouse_id: user_admin.warehouse_id})
+        const User = await user.findOne({
+            where : {
+                id:user_id, 
+                warehouse_id: user_admin.warehouse_id
+            }
+        })
 
         if(!User) 
             return res.status(400).json({message:"User doesn't exists in the warehouse"})
 
         const user_permission = await u_map.findAll({
-            user_id: user_id
+            where : {
+                user_id: user_id
+            }
         })
 
         const adminPersmission = user_permission.some(permission => permission.p_name === "MAP_USER_TO_USERGROUP");
@@ -52,7 +68,9 @@ const add_user_to_ug = async(req,res) => {
             return res.status(400).json({message:"User is an admin"})
 
         const user_ug_map_check = await user2ug.findOne({
-            user_id: user_id,
+            where : {
+                user_id: user_id,
+            }
         })
 
         if(!user_ug_map_check){
@@ -69,7 +87,7 @@ const add_user_to_ug = async(req,res) => {
             const remove_u2ug_map = await user2ug.destroy({
                 where:{
                     user_id:user_id,
-                    ug_id: ug_id
+                    ug_id: user_ug_map_check.ug_id
                 }
             })
 
@@ -106,22 +124,37 @@ const remove_user_from_ug = async(req,res) => {
             return res.status(403).json({message : "You do not have permission to add users to user groups"})
         }
 
-        const user_admin = await user.findOne({id:obj.id})
+        const user_admin = await user.findOne({
+            where : {
+                id:obj.id
+            }
+        })
 
-        const ug = await user_group.findOne({id:ug_id,warehouse_id: user_admin.warehouse_id})
+        const ug = await user_group.findOne({
+            where : {
+                id:ug_id,
+                warehouse_id: user_admin.warehouse_id
+            }
+        })
 
         if(!ug)
             return res.status(400).json({message:"User group doesn't exists in the warehouse"})
 
-        const User = await user.findOne({id:user_id, warehouse_id: user_admin.warehouse_id})
+        const User = await user.findOne({
+            where : {
+                id:user_id, warehouse_id: user_admin.warehouse_id
+            }
+        })
 
         if(!User) 
             return res.status(400).json({message:"User doesn't exists in the warehouse"})
 
         const user_ug_map_check = await user2ug.findOne({
-            user_id: user_id,
-            ug_id: ug_id,
-            warehouse_id: user_admin.warehouse_id
+            where : {
+                user_id: user_id,
+                ug_id: ug_id,
+                warehouse_id: user_admin.warehouse_id
+            }
         })
 
         if(!user_ug_map_check)

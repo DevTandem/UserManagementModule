@@ -66,7 +66,7 @@ const signUp = async (req , res) => {
             password : hashed_password,
             mobile_number : mobile_number,
             warehouse_id: check_invite.warehouse_id,
-            status : true
+            status : false
         })
 
         const pass = otp_generator.generate(6, { upperCaseAlphabets: false, lowerCaseAlphabets: false, specialChars: false });
@@ -99,40 +99,37 @@ const signUp = async (req , res) => {
             }
           });
 
-          const job = schedule.scheduleJob('5 * * * * *',async(req,res) =>{
+          setTimeout(async () => {
             try {
               const expired_otp = await otp.findOne({
-                where : {
-                  id : save_otp.id,
-                  email : email,
-                  expiresAt : {
-                    [Op.lt] : new Date()
-                  }
-                }
-              })
+                where: {
+                  id: save_otp.id,
+                  email: email,
+                  expiresAt: {
+                    [Op.lt]: new Date(),
+                  },
+                },
+              });
       
-              if(expired_otp){
-                await otp.removeAttribute({
-                  where : {
-                    id : save_otp.id
-                  }
-                })
+              if (expired_otp) {
+                await otp.destroy({
+                  where: {
+                    id: save_otp.id,
+                  },
+                });
       
-                await user.removeAttribute({
+                await user.destroy({
                   where: {
                     email: email,
                   },
                 });
-                console.log("Deleted credentials after expiry")
+      
+                console.log("Deleted credentials after expiry");
               }
+            } catch (error) {
+              console.log(error);
             }
-          
-            catch (error) {
-              console.log(error)
-            }
-          })
-
-
+          }, 70 * 1000); // Run after 1 minute
 
         return res.status(200).json({message : "User created successfully" , user : new_user})
     } catch (error) {
@@ -167,7 +164,7 @@ const super_user_signUp = async (req , res) => {
           email : email,
         }
       })
-      if(!check_user){
+      if(check_user){
         return res.status(400).json({message : "This email id can't be used for super user registeration "})
       }
 
@@ -180,7 +177,7 @@ const super_user_signUp = async (req , res) => {
           email : email,
           password : hashed_password,
           mobile_number : mobile_number,
-          status : true
+          status : false
       })
 
       const pass = otp_generator.generate(6, { upperCaseAlphabets: false, lowerCaseAlphabets: false, specialChars: false });
@@ -213,38 +210,38 @@ const super_user_signUp = async (req , res) => {
           }
         });
 
-        const job = schedule.scheduleJob('5 * * * * *',async(req,res) =>{
+        setTimeout(async () => {
           try {
             const expired_otp = await otp.findOne({
-              where : {
-                id : save_otp.id,
-                email : email,
-                expiresAt : {
-                  [Op.lt] : new Date()
-                }
-              }
-            })
-
-            if(expired_otp){
-              await otp.removeAttribute({
-                where : {
-                  id : save_otp.id
-                }
-              })
-
-              await user.removeAttribute({
+              where: {
+                id: save_otp.id,
+                email: email,
+                expiresAt: {
+                  [Op.lt]: new Date(),
+                },
+              },
+            });
+    
+            if (expired_otp) {
+              await otp.destroy({
+                where: {
+                  id: save_otp.id,
+                },
+              });
+    
+              await user.destroy({
                 where: {
                   email: email,
                 },
               });
-              console.log("Deleted credentials after expiry")
+    
+              console.log("Deleted credentials after expiry");
             }
+          } catch (error) {
+            console.log(error);
           }
-        
-          catch (error) {
-            console.log(error)
-          }
-        })
+        }, 70 * 1000); // Run after 1 minute
+
 
 
 
@@ -265,6 +262,7 @@ const login = async (req , res) => {
         const check_user = await user.findOne({
             where : {
                 email : email,
+                status : true
             }
         })
 

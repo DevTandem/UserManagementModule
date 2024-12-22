@@ -11,6 +11,7 @@ const user_permission_map = user_permission_map_model(sequelize, DataTypes)
 const UserModel = require("../db/models/user")
 const user = UserModel(sequelize, DataTypes)
 const otpModel = require("../db/models/otp");
+const { use } = require("../routes/organization");
 const otp = otpModel(sequelize, DataTypes)
 
 const verify_otp = async (req , res) => {
@@ -41,7 +42,7 @@ const verify_otp = async (req , res) => {
             return res.status(400).json({message: "Incorrect OTP.(Stay on the same page)"})
         }
           
-        await otp.removeAttribute({
+        await otp.destroy({
           where: {
             id: stored_otp.id
           }
@@ -56,18 +57,33 @@ const verify_otp = async (req , res) => {
           }
         )
 
-        const User = await user.findOne({
-          email:email
-        })
+        
 
-        if(User.warehouse_id){
+        await user.update({
+          status:true,
+        },
+      {
+        where : {
+          email : email
+        }
+      })
+
+      const find_user = await user.findOne({
+        where : {
+          email : email
+        }
+      })
+      console.log("email", find_user.email)
+      console.log("id",find_user.id)
+      console.log("warehouse_id",find_user.warehouse_id)
+        if(find_user.warehouse_id!=null){
           const permissionList = ["ACCESS_WAREHOUSE"];        //later permissionsList has to be changed if there is any change in users persmission
 
           for (const permission of permissionList) {
-              await u_map.create({
-                  user_id: User.id,
+              await user_permission_map.create({
+                  user_id: find_user.id,
                   p_name: permission,
-                  warehouse_id: User.warehouse_id
+                  warehouse_id: find_user.warehouse_id
               });
           }
         }
@@ -108,7 +124,7 @@ const super_user_verify_otp = async (req , res) => {
           return res.status(400).json({message: "Incorrect OTP.(Stay on the same page)"})
       }
         
-      await otp.removeAttribute({
+      await otp.destroy({
         where: {
           id: stored_otp.id
         }
@@ -123,9 +139,20 @@ const super_user_verify_otp = async (req , res) => {
         }
       )
 
-      const User = await user.findOne({
-        email:email
-      })
+      await user.update({
+        status:true,
+      },
+    {
+      where : {
+        email : email
+      }
+    })
+
+    const User = await user.findOne({
+      where : {
+        email : email
+      }
+    })
 
       const permissionList = ["ONBOARD_ORGANIZATION", "CREATE_WAREHOUSE", "CREATE_USER","ASSIGN_ADMIN"];
 

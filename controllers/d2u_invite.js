@@ -62,7 +62,7 @@ const d2u_invite_controller = async (req,res) =>{
             to: inviteEmail.email,
             subject: "Invitation to manage a organization",
             context: {
-                user_signup_link: "http://localhost:5000/main/signIn"
+                user_signup_link: "http://localhost:5000/main/super_user_signUp"
             }
         };
 

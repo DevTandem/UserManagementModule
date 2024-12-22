@@ -46,13 +46,13 @@ const u2u_invite_controller = async (req,res) =>{
             }
         })
 
-        const hasCreateUserPermission = permissions.some(permission => permission.p_name === "CREATE_USER");
+        const hasCreateUserPermission = permissions.find(permission => permission.p_name === "CREATE_USER");
 
         if (!hasCreateUserPermission) {
             return res.status(403).json({ message: "You do not have permission to create users" });
         }
 
-
+        console.log("permission " , hasCreateUserPermission)
         if (!email ) {
             return res.status(400).json({ message: "Provide an email id for invite" });
         }
@@ -81,7 +81,7 @@ const u2u_invite_controller = async (req,res) =>{
             to: inviteEmail.email,
             subject: "Invitation to become a user of the organization",
             context: {
-                user_signup_link: "http://localhost:5000/main/signIn"
+                user_signup_link: "http://localhost:5000/main/signUp"
             }
         };
 

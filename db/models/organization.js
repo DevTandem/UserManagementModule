@@ -15,11 +15,12 @@ module.exports = (sequelize, DataTypes) => {
   }
   organization.init({
     name: DataTypes.STRING,
-    descrition: DataTypes.STRING,
+    description: DataTypes.STRING,
     created_by: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'organization',
+    timestamps : false
   });
   return organization;
 };

@@ -12,10 +12,11 @@ const u_map = u2pmap(sequelize, DataTypes)
 const UserModel = require("../db/models/user");
 const user = UserModel(sequelize, DataTypes)
 const user2ugModel = require("../db/models/user_ug_map");
+const warehouse = require("../db/models/warehouse");
 const user2ug = user2ugModel(sequelize,DataTypes)
 
 
-const create_resource = async (req , res ) => {
+const create_resource = async (req , res , next) => {
     const { r_name , qty } = req.body
     const obj = req.user
     if(!obj) return res.json({message: "No auth found"})
@@ -26,14 +27,25 @@ const create_resource = async (req , res ) => {
                 user_id : obj.id
             }
         })
-        const hasPermission = check_permission.some(permission => permission.p_name === "MANAGE_RESOURCES");
+        const hasPermission = check_permission.find(permission => permission.p_name === "MANAGE_RESOURCES");
 
         if(!hasPermission){
-            return res.status(403).json({message : "You do not have permission to add users to user groups"})
+            return res.status(403).json({message : "You do not have permission to create resource"})
         }
 
         if(!r_name || !qty){
             return res.status(400).json({message : "Please provide all the details"})
+        }
+
+        const check_res = await resource.findAll({
+            where : {
+                r_name : r_name,
+                warehouse_id : hasPermission.warehouse_id
+            }
+        })
+
+        if(check_res.length){
+            return res.status(400).json({message : "Resource already exists"})
         }
 
         const create_res = await resource.create({
@@ -87,8 +99,10 @@ const get_all_resources = async (req , res) => {
 
         }else{
             const u2ug_check = await user2ug.findOne({
-                where:User.id,
-                warehouse_id: User.warehouse_id
+                where: {
+                    user_id : User.id,
+                    warehouse_id: User.warehouse_id
+                }
             })
             if(!u2ug_check){
                 return res.status(400).json({message: "User is not assigned to any user group in the organization"})

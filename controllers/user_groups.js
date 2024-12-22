@@ -13,16 +13,17 @@ const create_user_grp = async (req , res ) => {
     const { name } = req.body
     const obj = req.user
     const {warehouse_id} = req.params
-    var Warehouse_id; 
+    
     try {
 
         const check_permission = await u_map.findAll({
             where : {
-                user_id : obj.id
+                user_id : obj.id,
+                warehouse_id : warehouse_id
             }
         })
 
-        const hasPermission = check_permission.some(permission => permission.name === "CREATE_USER_GROUP");
+        const hasPermission = check_permission.find(permission => permission.p_name === "CREATE_USER_GROUP");
 
         if(!hasPermission){
             return res.status(403).json({message : "You do not have permission to create user group"})
@@ -36,19 +37,10 @@ const create_user_grp = async (req , res ) => {
         const adminPermission = check_permission.some(permission=>permission.warehouse_id >=0);
         // const superAdminPermission = check_permission.some(permission=>permission.warehouse_id === null);
 
-        if(adminPermission && hasPermission){
-            const check_warehouse = await u_map.findOne({
-                where : {
-                    user_id : obj.id
-                }
-            })
-            Warehouse_id = check_warehouse.warehouse_id
-        }else{
-            Warehouse_id = warehouse_id
-        }
+        
         const create_user_group = await user_grp.create({
             name : name,
-            warehouse_id : Warehouse_id
+            warehouse_id : warehouse_id
         })
         return res.status(201).json({ message: "User group created successfully", user_group: create_user_group })
 

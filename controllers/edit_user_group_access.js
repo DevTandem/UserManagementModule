@@ -24,7 +24,7 @@ const edit_user_group_access = async (req , res) => {
             }
         })
 
-        const hasPermission = check_permission.some(permission => permission.name === "MANAGE_USER_GROUP_ACCESS");
+        const hasPermission = check_permission.some(permission => permission.p_name === "MANAGE_USER_GROUP_ACCESS");
 
         if(!hasPermission){
             return res.status(403).json({message : "You do not have permission to manage user group access"})

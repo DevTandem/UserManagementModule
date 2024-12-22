@@ -45,7 +45,7 @@ const assign_admin = async (req,res) => {
             }
         })
 
-        const user_admin = user_permission.some(permission => permission.p_name == "CREATE_USER")
+        const user_admin = user_permission.find(permission => permission.p_name == "CREATE_USER")
 
         if(user_admin){
             return res.status(400).json({message: "User can't be made as an admin "})
@@ -78,7 +78,7 @@ const assign_admin = async (req,res) => {
         }
       
 
-        const permissionList = ["CREATE_USER", "ACCESS_WAREHOUSE", "CREATE_GROUP","MAP_USER_TO_USERGROUP","MANAGE_USER_GROUP_ACCESS","ASSIGN_USER_GROUP","MANAGE_USERS"];
+        const permissionList = ["CREATE_USER", "ACCESS_WAREHOUSE", "CREATE_USER_GROUP","MAP_USER_TO_USERGROUP","MANAGE_USER_GROUP_ACCESS","ASSIGN_USER_GROUP","MANAGE_USERS","MANAGE_RESOURCES"];
 
         for (const permission of permissionList) {
             await u_map.create({
@@ -97,43 +97,53 @@ const assign_admin = async (req,res) => {
     }
 }
 
-const getAllUsers = async (req,res)=>{     //It gives all users in warehouse and also users who don't have any warehouse
-    const {warehouse_id} = req.params
-    const obj = req.user
-    if(!obj) return res.json({message: "No auth found"})
 
-    try{
-        const check_permission = await u_map.findAll({
-            where : {
-                user_id : obj.id
-            }
-        })
-        const hasPermission = check_permission.some(permission => permission.p_name === "ASSIGN_ADMIN");
+const getAllUsers = async (req, res) => {
+  const { warehouse_id } = req.params;
+  const obj = req.user;
+  if (!obj) return res.json({ message: "No auth found" });
 
-        if(!hasPermission){
-            return res.status(403).json({message : "You do not have permission to get all users"})
-        }
+  try {
+    const check_permission = await u_map.findAll({
+      where: {
+        user_id: obj.id,
+      },
+    });
+    const hasPermission = check_permission.some((permission) => permission.p_name === "ASSIGN_ADMIN");
 
-        const users = await user.findAll({
-            where: {
-                warehouse_id:{
-                    [Op.or]: [warehouse_id,null],
-                }
-            },
-        })
-
-        if(!users){
-            return res.status(400).json({message: "No user found"})
-        }
-
-        return res.status(200).json({message:"Successfully fetched the users",Users: users})
-    }
-    catch(error){
-        console.log(error)
-        return res.status(500).json({ message: "Internal server error" });
+    if (!hasPermission) {
+      return res.status(403).json({ message: "You do not have permission to get all users" });
     }
 
-}
+    const excludedUserIds = await u_map.findAll({
+      attributes: ['user_id'],
+      where: {
+        p_name: "ASSIGN_ADMIN",
+      },
+    }).then((rows) => rows.map((row) => row.user_id));
+
+    const users = await user.findAll({
+      where: {
+        warehouse_id: {
+          [Op.or]: [warehouse_id, null],
+        },
+        id: {
+          [Op.notIn]: excludedUserIds,
+        },
+      },
+    });
+
+    if (!users || users.length === 0) {
+      return res.status(400).json({ message: "No user found" });
+    }
+
+    return res.status(200).json({ message: "Successfully fetched the users", Users: users });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 
 const remove_assign = async (req,res) => {
     const {warehouse_id,user_id} = req.params
@@ -172,9 +182,17 @@ const remove_assign = async (req,res) => {
             return res.status(400).json({message: "User is not an admin "})
         }
 
-        const User = await user.findOne({id: user_id})
+        const User = await user.findOne({
+            where : {
+                id: user_id
+            }
+        })
 
-        const check_super_user = await d2u_invite.findOne({email: User.email})
+        const check_super_user = await d2u_invite.findOne({
+            where : {
+                email: User.email
+            }
+        })
 
         if(check_super_user){
             return res.status(400).json({message: "Super user permissions cannot be revoked "})
@@ -213,5 +231,5 @@ const remove_assign = async (req,res) => {
 module.exports = {
     assign_admin,
     getAllUsers,
-    remove_assign
+    remove_assign,
 }

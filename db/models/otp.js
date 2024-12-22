@@ -20,6 +20,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'otp',
+    timestamps : false
   });
   return otp;
 };

@@ -15,13 +15,14 @@ module.exports = (sequelize, DataTypes) => {
   }
   resource_ug_map.init({
     resource_id: DataTypes.INTEGER,
-    user_id: DataTypes.INTEGER,
+    ug_id: DataTypes.INTEGER,
     warehouse_id: DataTypes.INTEGER,
     read_op: DataTypes.BOOLEAN,
     edit_op: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'resource_ug_map',
+    timestamps : false
   });
   return resource_ug_map;
 };

@@ -15,6 +15,9 @@ const warehouse = require("./routes/warehouse")
 const resource = require("./routes/resource")
 const user_group = require("./routes/user_group")
 const update_resource = require("./routes/update_resource");
+const verify_otp = require("./routes/verify_otp");
+const u2ug_map = require("./routes/u2ug_map");
+const ma_router = require("./routes/manage_access");
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -31,6 +34,9 @@ app.use("/main",update_resource)
 app.use("/main",resource)
 app.use("/main",deactivate_user)
 app.use("/main",manage_user)
+app.use("/main",verify_otp)
+app.use("/main",u2ug_map)
+app.use("/main",ma_router)
 
 const PORT = 5000;
 

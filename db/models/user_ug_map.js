@@ -20,6 +20,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'user_ug_map',
+    timestamps : false
   });
   return user_ug_map;
 };

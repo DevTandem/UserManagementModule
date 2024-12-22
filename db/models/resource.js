@@ -15,10 +15,13 @@ module.exports = (sequelize, DataTypes) => {
   }
   resource.init({
     r_name: DataTypes.STRING,
-    qty: DataTypes.INTEGER
+    qty: DataTypes.INTEGER,
+    user_id: DataTypes.INTEGER,
+    warehouse_id: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'resource',
+    timestamps : false
   });
   return resource;
 };

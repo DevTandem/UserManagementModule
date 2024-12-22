@@ -30,14 +30,14 @@ const create_warehouse = async (req,res) => {
         const hasPermission = check_permission.some(permission => permission.p_name === "CREATE_WAREHOUSE");
 
         if(!hasPermission){
-            return res.status(403).json({message : "You do not have permission to create organization"})
+            return res.status(403).json({message : "You do not have permission to create warehouse"})
         }
 
         if(!name){
             return res.status(400).json({message : "Please provide all the details"})
         }
 
-        const organization = await org.finaAll()
+        const organization = await org.findAll()
         if(!organization){
             return res.status(404).json({message: "No organization exists"})
         }

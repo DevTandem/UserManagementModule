@@ -26,7 +26,7 @@ module.exports = {
           model : "warehouses",
           key : "id"
         },
-        allowNull : false
+        allowNull : true
       },
       register_status : {
         type : Sequelize.BOOLEAN,
