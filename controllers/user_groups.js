@@ -15,14 +15,12 @@ const u_map = u_map_p(sequelize , DataTypes)
 const create_user_grp = async (req , res ) => {
     const { name } = req.body
     const obj = req.user
-    const {warehouse_id} = req.params
     
     try {
 
         const check_permission = await u_map.findAll({
             where : {
                 user_id : obj.id,
-                warehouse_id : warehouse_id
             }
         })
 
@@ -37,13 +35,13 @@ const create_user_grp = async (req , res ) => {
         }
 
         
-        const adminPermission = check_permission.some(permission=>permission.warehouse_id >=0);
+        // const adminPermission = check_permission.some(permission=>permission.warehouse_id >=0);
         // const superAdminPermission = check_permission.some(permission=>permission.warehouse_id === null);
 
         
         const create_user_group = await user_grp.create({
             name : name,
-            warehouse_id : warehouse_id
+            warehouse_id : hasPermission.warehouse_id
         })
         return res.status(200).json({
             status : 200,

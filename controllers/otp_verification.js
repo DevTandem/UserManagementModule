@@ -86,6 +86,16 @@ const verify_otp = async (req , res) => {
                   warehouse_id: find_user.warehouse_id
               });
           }
+        }else{
+          const permissionList = ["ORGANIZATION_USER"];       
+          
+          for (const permission of permissionList) {
+              await user_permission_map.create({
+                  user_id: find_user.id,
+                  p_name: permission,
+                  warehouse_id: null
+              });
+          }
         }
 
         return res.status(200).json({

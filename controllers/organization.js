@@ -31,6 +31,12 @@ const create_organization = async (req , res ) => {
             return res.status(400).json({message : "Please provide all the details"})
         }
 
+        const check_organiztion = await org.findAll()
+
+        if(check_organiztion.length>1){
+            return res.status(400).json({message: "You can't create more than one organization"})
+        }
+
         const organization = await org.create({
             name : name,
             description : description,
