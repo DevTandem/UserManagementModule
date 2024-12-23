@@ -55,6 +55,11 @@ const assign_user_to_warehouse = async (req,res) => {
                 }
             }
         )
+        const remove_permission = await u_map.destroy({
+            where:{
+                user_id : user_id
+            }
+        })
 
         const permissionList = ["ACCESS_WAREHOUSE"];        //later permissionsList has to be changed if there is any change in users persmission
 
@@ -126,6 +131,16 @@ const remove_user_from_warehouse = async (req,res) =>{
                 user_id : user_id
             }
         })
+
+        const permissionList = ["ORGANIZATION_USER"];       
+          
+          for (const permission of permissionList) {
+              await u_map_p.create({
+                  user_id: find_user.id,
+                  p_name: permission,
+                  warehouse_id: null
+              });
+          }
 
         const user_ug_map_check = await user2ug.findOne({
             where : {
@@ -229,8 +244,9 @@ const getAllUsersNotInAnyWarehouse = async (req,res)=>{
             return res.status(403).json({message : "You do not have permission to manage users"})
         }
 
-        const users = await user.findAll({
+        const users = await u_map_p.findAll({
             where:{
+                p_name:"ORGANIZATION_USER",
                 warehouse_id: null
             }
         })

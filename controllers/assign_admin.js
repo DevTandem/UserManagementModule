@@ -56,6 +56,7 @@ const assign_admin = async (req,res) => {
         if(!user_warehouse_check){
             return res.status(400).json({message: "User belongs to some other warehouse "})
         }
+        
 
         if(user_permission.length>0){
             const remove_permission = await u_map.destroy({
@@ -63,15 +64,28 @@ const assign_admin = async (req,res) => {
                     user_id : user_id
                 }
             })
+            
+            if (check_org_user){
+                await user.update(
+                    {
+                        warehouse_id: warehouse_id,
+                    },
+                    {
+                        where : {
+                            id: user_id,
+                        }
+                    },
+                )
+            }
         }
         else{                                                   //This condition is to update warehouse id of users who don't have any warehouse assigned
-            const update_user = await user.update(      
+            const update_user = await user.update(
                 {
                     warehouse_id: warehouse_id,
                 },
                 {
                     where : {
-                    id: user_id,
+                        id: user_id,
                     }
                 },
             )
