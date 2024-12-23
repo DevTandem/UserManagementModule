@@ -17,7 +17,7 @@ const otp = otpModel(sequelize, DataTypes)
 const verify_otp = async (req , res) => {
 
     const {input_otp} = req.body
-    const {email} = req.params
+    const {email} = req.query
 
     try {
         const stored_otp = await otp.findOne({
@@ -88,10 +88,23 @@ const verify_otp = async (req , res) => {
           }
         }
 
-        return res.status(200).json({ message: "OTP verified successfully." });
-        
+        return res.status(200).json({
+          status : 200,
+          message : "OTP verified successfully",
+          data : null,
+          error : null,
+          success : true
+      })
+              
     } catch (error) {
         console.log(error)
+        return res.status(500).json({
+          status: 500, 
+          message : "Internal server error",
+          data: null,        
+          error: error,       
+          success: false      
+      });
     }
 }
 
@@ -99,7 +112,7 @@ const verify_otp = async (req , res) => {
 const super_user_verify_otp = async (req , res) => {
 
   const {input_otp} = req.body
-  const {email} = req.params
+  const {email} = req.query
 
   try {
       const stored_otp = await otp.findOne({
@@ -162,12 +175,23 @@ const super_user_verify_otp = async (req , res) => {
             p_name: permission
         });
       }
-    return res.status(200).json({ message: "OTP verified successfully." });
+      return res.status(200).json({
+        status : 200,
+        message : "OTP verified successfully",
+        data : null,
+        error : null,
+        success : true
+    })
 
   } catch (error) {
       console.log(error)
-      return res.status(500).json({ message: "Internal server error" });
-
+      return res.status(500).json({
+        status: 500, 
+        message : "Internal server error",
+        data: null,        
+        error: error,       
+        success: false      
+    });
   }
 }
 

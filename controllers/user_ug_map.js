@@ -15,7 +15,7 @@ const user_group = ugModel(sequelize,DataTypes)
 
 
 const add_user_to_ug = async(req,res) => {
-    const {user_id,ug_id} = req.params
+    const {user_id,ug_id} = req.query
     const obj = req.user
     if(!obj) return res.json({message: "No auth found"})
 
@@ -98,17 +98,28 @@ const add_user_to_ug = async(req,res) => {
             })
         }
 
-        return res.status(200).json({message: "User has been assigned to the user group successfully"})
+        return res.status(200).json({
+            status : 200,
+            message : "User has been successfully added to the user group",
+            data : null,
+            error : null,
+            success : true
+        })
 
     } catch (error) {
         console.log(error)
-        return res.status(500).json({ message: "Internal server error" });
-    }
+        return res.status(500).json({
+            status: 500, 
+            message : "Internal server error",
+            data: null,        
+            error: error,       
+            success: false      
+        });    }
 
 }
 
 const remove_user_from_ug = async(req,res) => {
-    const {user_id,ug_id} = req.params
+    const {user_id,ug_id} = req.query
     const obj = req.user
     if(!obj) return res.json({message: "No auth found"})
 
@@ -167,13 +178,23 @@ const remove_user_from_ug = async(req,res) => {
             }
         })
 
-        return res.status(200).json({message: "User has been successfully removed from the user group"})
-        
+        return res.status(200).json({
+            status : 200,
+            message : "User has been successfully removed",
+            data : null,
+            error : null,
+            success : true
+        })        
     }
     catch (error) {
         console.log(error)
-        return res.status(500).json({ message: "Internal server error" });
-    }
+        return res.status(500).json({
+            status: 500, 
+            message : "Internal server error",
+            data: null,        
+            error: error,       
+            success: false      
+        });    }
 }
 
 module.exports = {

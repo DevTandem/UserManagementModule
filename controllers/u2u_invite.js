@@ -91,7 +91,13 @@ const u2u_invite_controller = async (req,res) =>{
                 return res.status(500).json({ message: "Failed to send email" });
             } else {
                 console.log(`Email Sent`);
-                return res.status(200).json({ message: "Invite sent successfully", inviteEmail });
+                return res.status(200).json({
+                    status : 200,
+                    message : "Invite sent successfully",
+                    data : inviteEmail,
+                    error : null,
+                    success : true
+                })
             }
         });
 
@@ -100,8 +106,13 @@ const u2u_invite_controller = async (req,res) =>{
 
     }catch(error){
         console.log(error);
-        return res.status(500).json({ message: "Internal server error" });
-    }
+        return res.status(500).json({
+            status: 500, 
+            message : "Internal server error",
+            data: null,        
+            error: error,       
+            success: false      
+        });    }
 }
 
 module.exports = {u2u_invite_controller}

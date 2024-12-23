@@ -17,7 +17,7 @@ const u2ug = u2ug_model(sequelize, DataTypes)
 
 const update_resource = async (req, res) => {
     const {add_qty, sub_qty} = req.body
-    const {r_id} = req.params;
+    const {r_id} = req.query;
     const obj = req.user
 
     if(!obj) return res.json({message: "No auth found"})
@@ -109,12 +109,23 @@ const update_resource = async (req, res) => {
         }
 
 
-        return res.status(200).json({ message: "Resource updated successfully" });
-        
+        return res.status(200).json({
+            status : 200,
+            message : "Resource updated successfully",
+            data : update_resource,
+            error : null,
+            success : true
+        })
+
     } catch (error) {
         console.log(error)
-        return res.status(500).json({message : "Internal server error"})
-    }
+        return res.status(500).json({
+            status: 500, 
+            message : "Internal server error",
+            data: null,        
+            error: error,       
+            success: false      
+        });    }
 }
 
 module.exports = {

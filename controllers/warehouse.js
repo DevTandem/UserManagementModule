@@ -52,13 +52,24 @@ const create_warehouse = async (req,res) => {
         }
 
         console.log(`Warehouse created : ${new_warehouse}`)
-        return res.status(200).json({message : "Warehouse created successfully" , Warehouse : new_warehouse})
+        return res.status(200).json({
+            status : 200,
+            message : "Warehouse created successfully",
+            data : new_warehouse,
+            error : null,
+            success : true
+        })
 
     }
     catch(error){
         console.log(error)
-        return res.status(500).json({message : "Internal server error"})
-    }
+        return res.status(500).json({
+            status: 500, 
+            message : "Internal server error",
+            data: null,        
+            error: error,       
+            success: false      
+        });    }
 }
 
 

@@ -13,7 +13,7 @@ const user = UserModel(sequelize, DataTypes)
 const edit_user_group_access = async (req , res) => {
     const manage_access = req.body
     const obj = req.user
-    const {resource_id} = req.params
+    const {resource_id} = req.query
 
     if(!obj) return res.json({message: "No auth found"})
     
@@ -101,13 +101,24 @@ const edit_user_group_access = async (req , res) => {
                 if(!res_map) return res.status(404).json({message: "Error in updating data of resource_ug_map table"})
             }
         }
-        return res.status(200).json({message: "Successfully changed the policies"})
+        return res.status(200).json({
+            status : 200,
+            message : "Successfully changed the policies",
+            data : null,
+            error : null,
+            success : true
+        })
 
         
     } catch (error) {
         console.log(error)
-        return res.status(500).json({message: "Internal Server Error"})
-    }
+        return res.status(500).json({
+            status: 500, 
+            message : "Internal server error",
+            data: null,        
+            error: error,       
+            success: false      
+        });    }
 }
 
 module.exports = {

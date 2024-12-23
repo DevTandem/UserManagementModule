@@ -13,7 +13,7 @@ const user2ug = user2ugModel(sequelize,DataTypes)
 
 
 const assign_user_to_warehouse = async (req,res) => {
-    const {user_id} = req.params
+    const {user_id} = req.query
     const obj = req.user
     if(!obj) return res.json({message: "No auth found"})
 
@@ -66,18 +66,28 @@ const assign_user_to_warehouse = async (req,res) => {
             });
         }
 
-        return res.status(200).json({message: "User has been assigned to the warehouse successfully"})
-
+        return res.status(200).json({
+            status : 200,
+            message : "User has been assigned to the warehouse successfully",
+            data : null,
+            error : null,
+            success : true
+        })
     }
     catch(error){
         console.log(error)
-        return res.status(500).json({ message: "Internal server error" });
-    }
+        return res.status(500).json({
+            status: 500, 
+            message : "Internal server error",
+            data: null,        
+            error: error,       
+            success: false      
+        });    }
 
 }
 
 const remove_user_from_warehouse = async (req,res) =>{
-    const {user_id} = req.params
+    const {user_id} = req.query
     const obj = req.user
     if(!obj) return res.json({message: "No auth found"})
 
@@ -156,12 +166,23 @@ const remove_user_from_warehouse = async (req,res) =>{
             }
         )
 
-        return res.status(200).json({message: "User has been successfully removed from warehouse"})
+        return res.status(200).json({
+            status : 200,
+            message : "User has been removed from the warehouse successfully",
+            data : null,
+            error : null,
+            success : true
+        })
 
     } catch (error) {
         console.log(error)
-        return res.status(500).json({ message: "Internal server error" });
-    }
+        return res.status(500).json({
+            status: 500, 
+            message : "Internal server error",
+            data: null,        
+            error: error,       
+            success: false      
+        });    }
 }
 
 
@@ -206,11 +227,23 @@ const getAllUsersInWarehouse = async (req,res) => {
         if(!users.length)
             return res.status(400).json({message: "No users found in the "})
 
-        return res.status(200).json({message: "Successfully fetched the users", Users: users})
+        return res.status(200).json({
+            status : 200,
+            message : "Users",
+            data : users,
+            error : null,
+            success : true
+        })
+
     } catch (error) {
         console.log(error)
-        return res.status(500).json({ message: "Internal server error" });
-    }
+        return res.status(500).json({
+            status: 500, 
+            message : "Internal server error",
+            data: null,        
+            error: error,       
+            success: false      
+        });    }
 }
 
 const getAllUsersNotInAnyWarehouse = async (req,res)=>{
@@ -238,12 +271,23 @@ const getAllUsersNotInAnyWarehouse = async (req,res)=>{
         if(!users.length)
             return res.status(400).json({message: "No users found"})
 
-        return res.status(200).json(users)
+        return res.status(200).json({
+            status : 200,
+            message : "Users",
+            data : users,
+            error : null,
+            success : true
+        })
         
     } catch (error) {
         console.log(error)
-        return res.status(500).json({ message: "Internal server error" });
-    }
+        return res.status(500).json({
+            status: 500, 
+            message : "Internal server error",
+            data: null,        
+            error: error,       
+            success: false      
+        });    }
 }
 
 module.exports = {

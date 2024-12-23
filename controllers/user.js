@@ -131,11 +131,23 @@ const signUp = async (req , res) => {
             }
           }, 70 * 1000); // Run after 1 minute
 
-        return res.status(200).json({message : "User created successfully" , user : new_user})
+          return res.status(200).json({
+            status : 200,
+            message : "Use created successfully",
+            data : new_user,
+            error : null,
+            success : true
+        })
+
     } catch (error) {
         console.log(error)
-        return res.status(500).json({message : "Internal server error"})
-    }
+        return res.status(500).json({
+          status: 500, 
+          message : "Internal server error",
+          data: null,        
+          error: error,       
+          success: false      
+      });    }
 }
 
 
@@ -245,11 +257,22 @@ const super_user_signUp = async (req , res) => {
 
 
 
-      return res.status(200).json({message : "User created successfully" , user : new_user})
+      return res.status(200).json({
+        status : 200,
+        message : "Super User created successfully",
+        data : new_user,
+        error : null,
+        success : true
+    })
   } catch (error) {
       console.log(error)
-      return res.status(500).json({message : "Internal server error"})
-  }
+      return res.status(500).json({
+        status: 500, 
+        message : "Internal server error",
+        data: null,        
+        error: error,       
+        success: false      
+    });  }
 }
 
 
@@ -279,12 +302,18 @@ const login = async (req , res) => {
 
         token = generate_token(check_user)
 
-        res.send(token)
+        res.send({
+          data : token})
         
     } catch (error) {
         console.log(error)
-        return res.status(500).json({message : "Internal server error"})
-    }
+        return res.status(500).json({
+          status: 500, 
+          message : "Internal server error",
+          data: null,        
+          error: error,       
+          success: false      
+      });    }
 }
 
 module.exports = {

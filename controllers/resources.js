@@ -1,5 +1,5 @@
 require("dotenv").config()
-const { Sequelize, DataTypes } = require('sequelize');
+const { Sequelize, DataTypes,Op } = require('sequelize');
 const dbUrl = process.env.DATABASE_URL
 const sequelize = new Sequelize(dbUrl);
 
@@ -60,12 +60,18 @@ const create_resource = async (req , res , next) => {
         
     } catch (error) {
         console.log(error)
-        return res.status(500).json({message : "Internal server error"})
+        return res.status(500).json({
+            status: 500, 
+            message : "Internal server error",
+            data: null,        
+            error: error,       
+            success: false      
+        });
     }
 }
 
 const get_all_resources = async (req , res) => {
-    // const {warehouse_id , user_group_id} = req.params
+    // const {warehouse_id , user_group_id} = req.query
     const obj = req.user 
 
     try {
@@ -112,20 +118,34 @@ const get_all_resources = async (req , res) => {
                 where : {
                     warehouse_id : User.id,
                     user_group_id : u2ug_check.ug_id,
-                    read_op: true
+                    [Op.or] : [
+                        {read_op:true},
+                        {edit_op: true}
+                    ]
                 }
             })
 
             if(!resources.length){
                 return res.status(404).json({message:"No Resources found"})
             }
-            return res.status(200).json({resources})
+            return res.status(200).json({
+                status : 200,
+                message : "Resources",
+                data : resources,
+                error : null,
+                success : true
+            })
         }    
                 
     } catch (error) {
         console.log(error)
-        return res.status(500).json({message : "Internal server error"})   
-    }
+        return res.status(500).json({
+            status: 500, 
+            message : "Internal server error",
+            data: null,        
+            error: error,       
+            success: false      
+        });    }
 }
 
 

@@ -38,12 +38,22 @@ const create_organization = async (req , res ) => {
         }) 
 
         console.log(`Organization created : ${organization}`)
-        return res.status(200).json({message : "Organization created successfully" , organization : organization})
-
+        return res.status(200).json({
+            status : 200,
+            message : "Organization created successfully",
+            data : organization,
+            error : null,
+            success : true
+        })
     } catch (error) {
         console.log(error)
-        return res.status(500).json({message : "Internal server error"})
-    }
+        return res.status(500).json({
+            status: 500, 
+            message : "Internal server error",
+            data: null,        
+            error: error,       
+            success: false      
+        });    }
 }
 
 

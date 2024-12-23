@@ -72,10 +72,18 @@ const validate_email = async(req,res) => {
                 return res.status(200).json({ message: "Invite sent successfully" });
             }
         });
-        return res.send(r_token)
+        return res.send({
+            data : r_token})
         // return res.status(200).json({message : "email validation success"})
     } catch (error) {
         console.log(error)
+        return res.status(500).json({
+            status: 500, 
+            message : "Internal server error",
+            data: null,        
+            error: error,       
+            success: false      
+        });
     }
 }
 
