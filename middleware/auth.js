@@ -22,7 +22,7 @@ const auth_middleware = async(req,res,next) => {
     }
 }
 
-const forgot_pass_middlware = async (req,res,next) => {
+const forgot_pass_middleware = async (req,res,next) => {
     var token
 
     if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
@@ -44,5 +44,5 @@ const forgot_pass_middlware = async (req,res,next) => {
 }
 module.exports = {
     auth_middleware,
-    forgot_pass_middlware
+    forgot_pass_middleware
 }

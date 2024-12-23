@@ -18,6 +18,8 @@ const update_resource = require("./routes/update_resource");
 const verify_otp = require("./routes/verify_otp");
 const u2ug_map = require("./routes/u2ug_map");
 const ma_router = require("./routes/manage_access");
+const forgot_pass = require("./routes/forgot_password");
+const validate_email = require("./routes/validate_email");
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -37,6 +39,8 @@ app.use("/main",manage_user)
 app.use("/main",verify_otp)
 app.use("/main",u2ug_map)
 app.use("/main",ma_router)
+app.use("/main",forgot_pass)
+app.use("/main",validate_email)
 
 const PORT = 5000;
 

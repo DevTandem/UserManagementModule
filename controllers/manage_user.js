@@ -1,5 +1,5 @@
 require("dotenv").config()
-const { Sequelize, DataTypes, Op, where} = require('sequelize');
+const { Sequelize, DataTypes, Op} = require('sequelize');
 const dbUrl = process.env.DATABASE_URL
 const sequelize = new Sequelize(dbUrl);
 
@@ -39,7 +39,10 @@ const assign_user_to_warehouse = async (req,res) => {
         
         const user_permission = await u_map.findAll({
             where : {
-                user_id : user_id
+                user_id : user_id,
+                p_name: {
+                    [Op.ne] : "ORGANIZATION_USER"
+                }
             }
         })
         console.log("id",user_permission.user_id)
@@ -132,7 +135,7 @@ const remove_user_from_warehouse = async (req,res) =>{
             }
         })
 
-        if(!user_permission && !user_permission_2){
+        if(!user_permission.length && !user_permission_2){
             return res.status(400).json({message: "User does not exist in your warehouse"})
         }
 
@@ -236,7 +239,8 @@ const getAllUsersInWarehouse = async (req,res) => {
                 id: {
                     [Op.notIn]: excludedUserIds,
                   },
-            }
+            },
+            limit: 10
         })
 
         if(!users.length)
@@ -281,7 +285,8 @@ const getAllUsersNotInAnyWarehouse = async (req,res)=>{
             where:{
                 p_name:"ORGANIZATION_USER",
                 warehouse_id: null
-            }
+            },
+            limit: 10
         })
         
         if(!users.length)

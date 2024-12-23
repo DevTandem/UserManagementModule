@@ -25,7 +25,11 @@ const verify_otp = async (req , res) => {
                 email : email ,
             }
         })
-        const check_user = await invite.findOne({email:email})
+        const check_user = await invite.findOne({
+          where:{
+            email:email
+          }
+        })
 
         if(!check_user)
           return res.status(400).json({message : "You can't access this page"})
@@ -57,22 +61,20 @@ const verify_otp = async (req , res) => {
           }
         )
 
-        
-
         await user.update({
           status:true,
         },
-      {
-        where : {
-          email : email
-        }
-      })
+        {
+          where : {
+            email : email
+          }
+        })
 
-      const find_user = await user.findOne({
-        where : {
-          email : email
-        }
-      })
+        const find_user = await user.findOne({
+          where : {
+            email : email
+          }
+        })
       console.log("email", find_user.email)
       console.log("id",find_user.id)
       console.log("warehouse_id",find_user.warehouse_id)

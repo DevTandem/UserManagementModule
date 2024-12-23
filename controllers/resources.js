@@ -88,13 +88,14 @@ const get_all_resources = async (req , res) => {
             }
         })
 
-        const hasPermission = check_permission.some(permission => permission.name === "MANAGE_RESOURCES");
+        const hasPermission = check_permission.some(permission => permission.p_name === "MANAGE_RESOURCES");
 
         if(hasPermission){
             const resources = await map_res2ug.findAll({
                 where : {
                     warehouse_id : User.warehouse_id
-                }
+                },
+                limit:10
             })
 
             if(!resources.length){
@@ -122,7 +123,8 @@ const get_all_resources = async (req , res) => {
                         {read_op:true},
                         {edit_op: true}
                     ]
-                }
+                },
+                limit:10
             })
 
             if(!resources.length){

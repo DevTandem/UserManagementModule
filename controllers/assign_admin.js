@@ -41,7 +41,10 @@ const assign_admin = async (req,res) => {
 
         const user_permission = await u_map.findAll({
             where : {
-                user_id : user_id
+                user_id : user_id,
+                p_name:{
+                    [Op.ne]: "ORGANIZATION_USER"
+                }
             }
         })
 
@@ -57,29 +60,14 @@ const assign_admin = async (req,res) => {
             return res.status(400).json({message: "User belongs to some other warehouse "})
         }
         
-
-        if(user_permission.length>0){
-            const remove_permission = await u_map.destroy({
-                where:{
-                    user_id : user_id
-                }
-            })
-            
-            if (check_org_user){
-                await user.update(
-                    {
-                        warehouse_id: warehouse_id,
-                    },
-                    {
-                        where : {
-                            id: user_id,
-                        }
-                    },
-                )
+        const check_org_user = await u_map.findOne({
+            where:{
+                p_name: "ORGANIZATION_USER"
             }
-        }
-        else{                                                   //This condition is to update warehouse id of users who don't have any warehouse assigned
-            const update_user = await user.update(
+        })
+
+        if (check_org_user){
+            await user.update(
                 {
                     warehouse_id: warehouse_id,
                 },
@@ -89,6 +77,15 @@ const assign_admin = async (req,res) => {
                     }
                 },
             )
+        }
+
+        if(user_permission.length>0 || check_org_user){
+            const remove_permission = await u_map.destroy({
+                where:{
+                    user_id : user_id
+                }
+            })
+            
         }
       
 
@@ -155,9 +152,10 @@ const getAllUsers = async (req, res) => {
           [Op.notIn]: excludedUserIds,
         },
       },
+      limit:10
     });
 
-    if (!users || users.length === 0) {
+    if (users.length===0) {
       return res.status(400).json({ message: "No user found" });
     }
 

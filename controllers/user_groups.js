@@ -68,7 +68,6 @@ const getAllUserGroups = async (req,res) =>{
 
     if(!obj) return res.json({message: "No auth found"})
     
-
     try {
         const check_permission = await u_map.findAll({
             where : {
@@ -82,7 +81,12 @@ const getAllUserGroups = async (req,res) =>{
             return res.status(403).json({message : "You do not have permission to create user group"})
         }
         
-        const user_groups = await user_grp.findAll()
+        const user_groups = await user_grp.findAll({
+            where:{
+                warehouse_id: hasPermission.warehouse_id
+            },
+            limit:10
+        })
 
         if(!user_groups.length()){
             return res.status(404).json({message : "No user groups found"})
@@ -138,9 +142,7 @@ const delete_user_group = async( req , res ) => {
             }
         })
 
-        
-
-        if(check_ug.warehouse_id !== hasPermission.warehouse_id){
+        if(!check_ug){
             return res.status(403).json({message : "User group does not exist in your warehouse"})
         }
 

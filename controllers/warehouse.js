@@ -37,7 +37,7 @@ const create_warehouse = async (req,res) => {
             return res.status(400).json({message : "Please provide all the details"})
         }
 
-        const organization = await org.findAll()
+        const organization = await org.findOne()
         if(!organization){
             return res.status(404).json({message: "No organization exists"})
         }
@@ -73,4 +73,49 @@ const create_warehouse = async (req,res) => {
 }
 
 
-module.exports = {create_warehouse}
+const getAllWarehouse = async (req,res) => {
+    const obj = req.user
+
+    if(!obj) return res.json({message: "No auth found"})
+
+    try {
+        const check_permission = await u_map.findAll({
+            where : {
+                user_id : obj.id
+            }
+        })
+        
+        const hasPermission = check_permission.some(permission => permission.p_name === "CREATE_WAREHOUSE");
+
+        if(!hasPermission){
+            return res.status(403).json({message : "You do not have permission to create warehouse"})
+        }
+
+        const warehouses = await warehouse.findAll()
+
+        if(!warehouses.length){
+            return res.status(400).json({message: "No warehouse found in organization"})
+        }
+
+        return res.status(200).json({
+            status : 200,
+            message : "Warehouses",
+            data : warehouses,
+            error : null,
+            success : true
+        })
+
+
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({
+            status: 500, 
+            message : "Internal server error",
+            data: null,        
+            error: error,       
+            success: false      
+        });
+    }
+}
+
+module.exports = {create_warehouse, getAllWarehouse}
